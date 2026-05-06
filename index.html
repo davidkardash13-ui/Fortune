@@ -86,13 +86,97 @@
       filter: drop-shadow(0 2px 18px rgba(255, 200, 77, 0.22));
     }
 
-    header p {
+    .btn-howto {
+      margin-top: 0.85rem;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.5rem 1.05rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: linear-gradient(165deg, rgba(40, 48, 64, 0.95), rgba(20, 25, 36, 0.98));
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .btn-howto:hover {
+      border-color: rgba(255, 200, 77, 0.35);
+    }
+
+    .btn-howto:active {
+      transform: scale(0.98);
+    }
+
+    dialog.help-dialog::backdrop {
+      background: rgba(4, 6, 12, 0.72);
+      backdrop-filter: blur(6px);
+    }
+
+    .help-dialog {
+      max-width: 28rem;
+      width: calc(100vw - 2rem);
+      margin: auto;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: linear-gradient(165deg, rgba(28, 34, 50, 0.98), rgba(12, 16, 26, 0.99));
+      color: var(--text);
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.55);
+    }
+
+    .help-dialog-inner {
+      position: relative;
+      padding: 2.55rem 1.35rem 1.35rem;
+    }
+
+    .help-dialog h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .help-dialog-body {
       margin: 0;
-      color: rgba(180, 190, 210, 0.92);
-      font-size: 0.96rem;
-      max-width: 38rem;
-      margin-inline: auto;
-      text-shadow: 0 1px 18px rgba(0, 0, 0, 0.45);
+      padding: 0;
+      padding-left: 1.05rem;
+      font-size: 0.875rem;
+      line-height: 1.58;
+      color: rgba(200, 208, 228, 0.94);
+      max-height: min(62vh, 420px);
+      overflow-y: auto;
+    }
+
+    .help-dialog-body li {
+      margin-bottom: 0.45rem;
+    }
+
+    .help-dialog-body strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-help-close {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-help-close:hover {
+      background: rgba(255, 255, 255, 0.12);
     }
 
     .grid {
@@ -128,13 +212,19 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--muted);
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
-    .lines-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.65rem;
-      font-size: 0.95rem;
+    .panel .sector-count {
+      text-transform: none;
+      letter-spacing: normal;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--accent);
     }
 
     .lines-list {
@@ -303,17 +393,6 @@
     .btn-add-line:disabled {
       opacity: 0.45;
       cursor: not-allowed;
-    }
-
-    .hint {
-      margin-top: 0.65rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
-    .hint strong {
-      color: var(--accent);
-      font-weight: 700;
     }
 
     .wheel-area {
@@ -588,22 +667,133 @@
       font-weight: 600;
       color: var(--accent);
     }
+
+    .save-slots {
+      margin-top: 0.9rem;
+      padding: 0.75rem 0.8rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(12, 16, 26, 0.45);
+    }
+
+    .save-slots h3 {
+      margin: 0 0 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .save-slots-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .save-slot-pick {
+      display: inline-flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-right: 0.35rem;
+    }
+
+    .btn-slot {
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.82rem;
+      min-width: 2.35rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(26, 32, 46, 0.75);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+      position: relative;
+    }
+
+    .btn-slot:hover:not(:disabled) {
+      border-color: rgba(255, 200, 77, 0.28);
+    }
+
+    .btn-slot.is-active {
+      border-color: rgba(255, 200, 77, 0.55);
+      box-shadow: 0 0 0 3px rgba(255, 200, 77, 0.1);
+    }
+
+    .btn-slot.is-filled::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--glow);
+    }
+
+    .btn-slot:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-slot-action {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(165deg, rgba(40, 48, 64, 0.95), rgba(20, 25, 36, 0.98));
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .btn-slot-action:hover:not(:disabled) {
+      border-color: rgba(255, 200, 77, 0.28);
+    }
+
+    .btn-slot-action:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .save-slot-status {
+      margin-top: 0.55rem;
+      margin-bottom: 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.35;
+      min-height: 0;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>Колесо фортуны</h1>
-      <p>Строка = сектор на колесе. Картинка — кнопкой у строки; по желанию можно указать URL после текста через <strong>Tab</strong>.</p>
+      <button type="button" class="btn-howto" id="btn-howto">Как пользоваться?</button>
     </header>
 
     <div class="grid">
       <div class="panel">
-        <h2>Варианты</h2>
-        <span class="lines-label">Текст (одна строка — один сектор)</span>
+        <h2>Варианты <span class="sector-count" aria-label="Число секторов" title="Секторов"><span id="count">0</span></span></h2>
         <div id="lines-list" class="lines-list" aria-label="Список вариантов"></div>
         <button type="button" class="btn-add-line" id="add-line">+ Добавить вариант</button>
-        <p class="hint">Секторов: <strong id="count">0</strong>. Пустые строки — тоже секторы. Ссылку на картинку: <strong>текст</strong> + <strong>Tab</strong> + URL (<code>https://…</code>, <code>data:image…</code>) — имеет приоритет над файлом. Цвет сектора — слева от текста.</p>
+        <div class="save-slots" aria-label="Слоты сохранения">
+          <h3>Слоты сохранения</h3>
+          <div class="save-slots-row">
+            <div class="save-slot-pick" id="save-slot-pick" role="group" aria-label="Выбор слота"></div>
+            <button type="button" class="btn-slot-action" id="save-slot-save">Сохранить</button>
+            <button type="button" class="btn-slot-action" id="save-slot-load">Загрузить</button>
+            <button type="button" class="btn-slot-action" id="save-slot-clear" title="Очистить выбранный слот">Очистить слот</button>
+          </div>
+          <p class="save-slot-status" id="save-slot-status" role="status" aria-live="polite"></p>
+        </div>
       </div>
 
       <div class="panel wheel-area">
@@ -651,6 +841,23 @@
       </div>
     </div>
   </div>
+
+  <dialog id="help-dialog" class="help-dialog">
+    <div class="help-dialog-inner">
+      <button type="button" class="btn-help-close" id="help-close" aria-label="Закрыть">×</button>
+      <h2 id="help-title">Как пользоваться</h2>
+      <ul class="help-dialog-body" aria-describedby="help-title">
+        <li><strong>Строка</strong> в списке слева = один <strong>сектор</strong> на колесе.</li>
+        <li><strong>Картинка:</strong> кнопка <strong>«Загрузить фото»</strong> у строки; либо в поле ввода: <strong>текст</strong>, затем <strong>Tab</strong>, затем URL (<code>https://…</code> или <code>data:image…</code>). URL из строки <strong>важнее</strong>, чем файл.</li>
+        <li><strong>Цвет сектора</strong> — квадрат слева от текста строки.</li>
+        <li><strong>Пустая строка</strong> тоже считается отдельным сектором.</li>
+        <li><strong>Число</strong> рядом с «Варианты» — текущее количество секторов (для «Крутить» нужно минимум <strong>2</strong>).</li>
+        <li><strong>Перемешать порядок</strong> — меняет порядок строк (и сохранённые у строк цвета/фото сохраняют привязку).</li>
+        <li><strong>Слоты 1–5:</strong> <strong>Сохранить</strong> / <strong>Загрузить</strong> / <strong>Очистить слот</strong>. В сохранение входят текст строк, цвета секторов, загруженные фото (файлы кладутся в хранилище браузера), угол колеса и запасная палитра. URL через Tab хранится в тексте строки.</li>
+        <li>Сообщения после сохранения/загрузки слотов показываются <strong>строкой статуса</strong> под кнопками слотов.</li>
+      </ul>
+    </div>
+  </dialog>
 
   <script>
     (function () {
@@ -761,6 +968,276 @@
       let rotation = 0;
       let spinning = false;
       let animId = null;
+
+      const SAVE_SLOTS_KEY = "fortuneWheel_saveSlots_v1";
+      const SAVE_SLOT_COUNT = 5;
+      /** @type {number} */
+      let saveSlotActive = 0;
+      let saveSlotBusy = false;
+
+      function loadSaveBank() {
+        const base = { active: 0, slots: {} };
+        try {
+          const raw = localStorage.getItem(SAVE_SLOTS_KEY);
+          if (!raw) return base;
+          const o = JSON.parse(raw);
+          if (!o || typeof o !== "object") return base;
+          const a = o.active;
+          base.active = typeof a === "number" && a >= 0 && a < SAVE_SLOT_COUNT ? Math.floor(a) : 0;
+          base.slots = o.slots && typeof o.slots === "object" ? o.slots : {};
+          return base;
+        } catch (e) {
+          return { active: 0, slots: {} };
+        }
+      }
+
+      function writeSaveBank(bank) {
+        localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(bank));
+      }
+
+      function setSaveStatus(msg, isError) {
+        const el = document.getElementById("save-slot-status");
+        if (!el) return;
+        el.textContent = msg || "";
+        el.style.color = isError ? "rgba(255, 168, 178, 0.95)" : "var(--muted)";
+      }
+
+      function revokeAllAttachedBlobs() {
+        attachedPhotos.forEach(function (u) {
+          if (u && typeof u === "string" && u.startsWith("blob:")) URL.revokeObjectURL(u);
+        });
+      }
+
+      function blobUrlToDataUrl(blobUrl) {
+        return fetch(blobUrl)
+          .then(function (r) {
+            return r.blob();
+          })
+          .then(function (blob) {
+            return new Promise(function (resolve, reject) {
+              const fr = new FileReader();
+              fr.onload = function () {
+                resolve(fr.result);
+              };
+              fr.onerror = reject;
+              fr.readAsDataURL(blob);
+            });
+          });
+      }
+
+      function snapshotUploadedImageForIndex(lineStr, idx) {
+        const parsed = parseLineWithOptionalUrl(lineStr);
+        if (parsed.urlFromLine) return Promise.resolve(null);
+        const u = attachedPhotos[idx];
+        if (!u || typeof u !== "string") return Promise.resolve(null);
+        if (u.startsWith("data:image/")) return Promise.resolve(u);
+        if (u.startsWith("blob:")) return blobUrlToDataUrl(u);
+        if (/^https?:\/\//i.test(u)) return Promise.resolve(u);
+        return Promise.resolve(null);
+      }
+
+      function buildSnapshotAsync() {
+        const lines = getLinesRaw();
+        const colorInputs = getColorsRaw();
+        const colors = colorInputs.map(function (c) {
+          return normalizeHex6(c);
+        });
+        const pal = COLORS.map(function (c) {
+          return normalizeHex6(c) || c;
+        });
+        return Promise.all(
+          lines.map(function (line, i) {
+            return snapshotUploadedImageForIndex(line, i);
+          })
+        ).then(function (uploadedImages) {
+          return {
+            v: 1,
+            t: Date.now(),
+            lines: lines.slice(),
+            colors: colors,
+            uploadedImages: uploadedImages,
+            rotation: rotation,
+            palette: pal,
+          };
+        });
+      }
+
+      function restoreFromSnapshot(snap) {
+        if (!snap || snap.v !== 1 || !Array.isArray(snap.lines)) {
+          setSaveStatus("В слоте нет данных или файл повреждён.", true);
+          return;
+        }
+        if (spinning) {
+          if (animId) cancelAnimationFrame(animId);
+          animId = null;
+          spinning = false;
+          setWheelSpinning(false);
+        }
+        revokeAllAttachedBlobs();
+        imgCache.clear();
+        attachedPhotos = [];
+        attachedColors = [];
+        if (snap.palette && Array.isArray(snap.palette)) {
+          const pal = snap.palette
+            .map(function (x) {
+              return normalizeHex6(x);
+            })
+            .filter(Boolean);
+          COLORS = pal.length >= 2 ? pal : WHEEL_COLORS_DEFAULTS.slice();
+        } else {
+          COLORS = WHEEL_COLORS_DEFAULTS.slice();
+        }
+        const rot = snap.rotation;
+        rotation = typeof rot === "number" && isFinite(rot) ? rot : 0;
+        const lines = snap.lines;
+        const colors = Array.isArray(snap.colors) ? snap.colors : [];
+        const imgs = Array.isArray(snap.uploadedImages) ? snap.uploadedImages : [];
+        if (!linesListEl) return;
+        while (linesListEl.firstChild) linesListEl.removeChild(linesListEl.firstChild);
+        lines.forEach(function (line, i) {
+          const c = colors[i] != null ? colors[i] : null;
+          linesListEl.appendChild(createLineRow(line, typeof c === "string" ? c : null));
+        });
+        const n = lines.length;
+        syncAttachedLength(n);
+        syncAttachedColorsLength(n);
+        for (let i = 0; i < n; i++) {
+          const im = imgs[i];
+          attachedPhotos[i] = typeof im === "string" && im ? sanitizeImageSrc(im) : null;
+        }
+        syncSegmentsFromInput();
+        refreshResultFromWheel();
+        renderSaveSlotPick();
+      }
+
+      function renderSaveSlotPick() {
+        const host = document.getElementById("save-slot-pick");
+        if (!host) return;
+        while (host.firstChild) host.removeChild(host.firstChild);
+        const bank = loadSaveBank();
+        saveSlotActive =
+          typeof bank.active === "number" && bank.active >= 0 && bank.active < SAVE_SLOT_COUNT ? bank.active : 0;
+        for (let s = 0; s < SAVE_SLOT_COUNT; s++) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn-slot";
+          btn.dataset.slot = String(s);
+          btn.textContent = String(s + 1);
+          const key = String(s);
+          const has = bank.slots && bank.slots[key] && bank.slots[key].v === 1;
+          btn.title = has ? "Слот " + String(s + 1) + " (есть сохранение)" : "Пустой слот " + String(s + 1);
+          btn.classList.toggle("is-filled", !!has);
+          btn.classList.toggle("is-active", s === saveSlotActive);
+          btn.addEventListener("click", function () {
+            saveSlotActive = s;
+            const next = loadSaveBank();
+            next.active = saveSlotActive;
+            try {
+              writeSaveBank(next);
+            } catch (e) {}
+            renderSaveSlotPick();
+            refreshSaveSlotActionsDisabled();
+          });
+          btn.disabled = spinning || saveSlotBusy;
+          host.appendChild(btn);
+        }
+        refreshSaveSlotActionsDisabled();
+      }
+
+      function refreshSaveSlotActionsDisabled() {
+        const busy = spinning || saveSlotBusy;
+        const sv = document.getElementById("save-slot-save");
+        const ld = document.getElementById("save-slot-load");
+        const clr = document.getElementById("save-slot-clear");
+        if (sv) sv.disabled = busy;
+        const bank = loadSaveBank();
+        const slotKey = String(saveSlotActive);
+        const hasSlot = !!(bank.slots && bank.slots[slotKey] && bank.slots[slotKey].v === 1);
+        if (ld) ld.disabled = busy || !hasSlot;
+        if (clr) clr.disabled = busy || !hasSlot;
+        const host = document.getElementById("save-slot-pick");
+        if (host) {
+          host.querySelectorAll(".btn-slot").forEach(function (b) {
+            b.disabled = busy;
+          });
+        }
+      }
+
+      function initSaveSlots() {
+        const bank0 = loadSaveBank();
+        saveSlotActive = bank0.active || 0;
+        renderSaveSlotPick();
+
+        const saveBtn = document.getElementById("save-slot-save");
+        const loadBtn = document.getElementById("save-slot-load");
+        const clrBtn = document.getElementById("save-slot-clear");
+
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            if (spinning || saveSlotBusy) return;
+            saveSlotBusy = true;
+            renderSaveSlotPick();
+            setSaveStatus("Сохраняю…");
+            buildSnapshotAsync()
+              .then(function (snap) {
+                const bank = loadSaveBank();
+                bank.active = saveSlotActive;
+                bank.slots[String(saveSlotActive)] = snap;
+                try {
+                  writeSaveBank(bank);
+                } catch (e) {
+                  setSaveStatus("Не удалось записать слоты: хранилище переполнено (попробуйте меньше картинок).", true);
+                  return;
+                }
+                const d = new Date(snap.t || Date.now());
+                setSaveStatus(
+                  "Слот " + String(saveSlotActive + 1) + " сохранён (" + d.toLocaleString("ru-RU") + ")."
+                );
+              })
+              .catch(function () {
+                setSaveStatus("Ошибка при подготовке сохранения.", true);
+              })
+              .finally(function () {
+                saveSlotBusy = false;
+                renderSaveSlotPick();
+                syncSegmentsFromInput();
+                refreshResultFromWheel();
+              });
+          });
+        }
+
+        if (loadBtn) {
+          loadBtn.addEventListener("click", function () {
+            if (spinning || saveSlotBusy) return;
+            const bank = loadSaveBank();
+            const snap = bank.slots[String(saveSlotActive)];
+            if (!snap || snap.v !== 1) {
+              setSaveStatus("В слоте " + String(saveSlotActive + 1) + " пусто.", true);
+              return;
+            }
+            restoreFromSnapshot(snap);
+            const d = new Date(snap.t || Date.now());
+            setSaveStatus("Загружен слот " + String(saveSlotActive + 1) + " от " + d.toLocaleString("ru-RU") + ".");
+          });
+        }
+
+        if (clrBtn) {
+          clrBtn.addEventListener("click", function () {
+            if (spinning || saveSlotBusy) return;
+            const bank = loadSaveBank();
+            delete bank.slots[String(saveSlotActive)];
+            bank.active = saveSlotActive;
+            try {
+              writeSaveBank(bank);
+            } catch (e) {
+              setSaveStatus("Не удалось обновить хранилище.", true);
+              return;
+            }
+            renderSaveSlotPick();
+            setSaveStatus("Слот " + String(saveSlotActive + 1) + " очищен.");
+          });
+        }
+      }
 
       function getLinesRaw() {
         if (!linesListEl) return [];
@@ -970,9 +1447,10 @@
       function updateCount() {
         const n = segments.length;
         countEl.textContent = String(n);
-        spinBtn.disabled = n < 2 || spinning;
-        shuffleBtn.disabled = n < 2 || spinning;
-        const idle = !spinning;
+        const blocked = spinning || saveSlotBusy;
+        spinBtn.disabled = n < 2 || blocked;
+        shuffleBtn.disabled = n < 2 || blocked;
+        const idle = !blocked;
         if (addLineBtn) addLineBtn.disabled = !idle;
         if (linesListEl) {
           linesListEl.querySelectorAll(".line-photo-input").forEach(function (inp) {
@@ -981,7 +1459,11 @@
           linesListEl.querySelectorAll(".btn-delete-line").forEach(function (btn) {
             btn.disabled = !idle;
           });
+          linesListEl.querySelectorAll(".line-color-input").forEach(function (inp) {
+            inp.disabled = !idle;
+          });
         }
+        refreshSaveSlotActionsDisabled();
       }
 
       function wedgePath(a0, a1, rr) {
@@ -1474,6 +1956,23 @@
         });
       }
 
+      initSaveSlots();
+      (function initHelpHowto() {
+        const btn = document.getElementById("btn-howto");
+        const dlg = /** @type {HTMLDialogElement | null} */ (document.getElementById("help-dialog"));
+        const cls = document.getElementById("help-close");
+        if (!btn || !dlg) return;
+        function closeDlg() {
+          if (typeof dlg.close === "function") dlg.close();
+        }
+        btn.addEventListener("click", function () {
+          if (typeof dlg.showModal === "function") dlg.showModal();
+        });
+        if (cls) cls.addEventListener("click", closeDlg);
+        dlg.addEventListener("click", function (ev) {
+          if (ev.target === dlg) closeDlg();
+        });
+      })();
       resizeCanvasToDisplay();
 
       const defaultLines = ["Удача", "Кофе", "Прогулка", "Кино", "Книга"];
