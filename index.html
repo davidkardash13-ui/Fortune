@@ -182,8 +182,9 @@
 
     .line-text::placeholder {
       color: var(--muted);
-      opacity: 0.7;
     }
+
+    /* wheel colors are controlled per-line (see .line-color-input) */
 
     .line-photo-input {
       position: absolute;
@@ -244,6 +245,29 @@
     .btn-delete-line:disabled {
       opacity: 0.45;
       cursor: not-allowed;
+    }
+
+    .line-color-input {
+      flex: 0 0 auto;
+      width: 2.05rem;
+      height: 2.2rem;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      background: var(--surface-solid);
+      cursor: pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 1px 0 rgba(0,0,0,0.25);
+    }
+
+    .line-color-input::-webkit-color-swatch-wrapper {
+      padding: 3px;
+    }
+
+    .line-color-input::-webkit-color-swatch {
+      border-radius: 7px;
+      border: none;
     }
 
     .line-photo-input:disabled + .btn-upload-photo,
@@ -579,7 +603,7 @@
         <span class="lines-label">Текст (одна строка — один сектор)</span>
         <div id="lines-list" class="lines-list" aria-label="Список вариантов"></div>
         <button type="button" class="btn-add-line" id="add-line">+ Добавить вариант</button>
-        <p class="hint">Секторов: <strong id="count">0</strong>. Пустые строки — тоже секторы. Ссылку на картинку: <strong>текст</strong> + <strong>Tab</strong> + URL (<code>https://…</code>, <code>data:image…</code>) — имеет приоритет над файлом.</p>
+        <p class="hint">Секторов: <strong id="count">0</strong>. Пустые строки — тоже секторы. Ссылку на картинку: <strong>текст</strong> + <strong>Tab</strong> + URL (<code>https://…</code>, <code>data:image…</code>) — имеет приоритет над файлом. Цвет сектора — слева от текста.</p>
       </div>
 
       <div class="panel wheel-area">
@@ -642,11 +666,19 @@
       const resultPhotoEl = document.getElementById("result-photo");
       const wheelFrameEl = document.getElementById("frame");
 
-      const COLORS = [
+      const WHEEL_COLORS_DEFAULTS = [
         "#2d5080", "#d94f61", "#1f2a42", "#6ca8c9",
         "#dfeff2", "#3d5690", "#e8883c", "#1e5660",
         "#269b86", "#c75b45", "#3d6899", "#93c9d8"
       ];
+      let COLORS = WHEEL_COLORS_DEFAULTS.slice();
+
+      function normalizeHex6(s) {
+        if (typeof s !== "string") return null;
+        const t = s.trim();
+        if (!/^#[0-9a-fA-F]{6}$/.test(t)) return null;
+        return t.toLowerCase();
+      }
 
       function parseHex(hex) {
         const h = (hex || "#000").replace("#", "").trim();
@@ -717,10 +749,12 @@
         return g;
       }
 
-      /** @type {{ text: string, imageSrc: string | null }[]} */
+      /** @type {{ text: string, imageSrc: string | null, color: string | null }[]} */
       let segments = [];
       /** blob: URLs по индексу строки; URL из текста главнее при сборке сектора */
       let attachedPhotos = [];
+      /** hex-цвета по индексу строки (для сектора) */
+      let attachedColors = [];
       /** @type {Map<string, HTMLImageElement>} */
       const imgCache = new Map();
 
@@ -738,9 +772,24 @@
         return out;
       }
 
-      function createLineRow(initialText) {
+      function getColorsRaw() {
+        if (!linesListEl) return [];
+        const inputs = linesListEl.querySelectorAll(".line-row .line-color-input");
+        const out = [];
+        inputs.forEach(function (inp) {
+          out.push(inp.value);
+        });
+        return out;
+      }
+
+      function createLineRow(initialText, initialColor) {
         const row = document.createElement("div");
         row.className = "line-row";
+        const colorIn = document.createElement("input");
+        colorIn.type = "color";
+        colorIn.className = "line-color-input";
+        colorIn.title = "Цвет сектора";
+        colorIn.value = normalizeHex6(initialColor) || COLORS[0];
         const textIn = document.createElement("input");
         textIn.type = "text";
         textIn.className = "line-text";
@@ -760,10 +809,12 @@
         delBtn.type = "button";
         delBtn.className = "btn-delete-line";
         delBtn.textContent = "Удалить";
+        row.appendChild(colorIn);
         row.appendChild(textIn);
         row.appendChild(fileIn);
         row.appendChild(lbl);
         row.appendChild(delBtn);
+        colorIn.addEventListener("input", onLineColorChanged);
         textIn.addEventListener("input", onLineChanged);
         fileIn.addEventListener("change", onLinePhotoChange);
         delBtn.addEventListener("click", function () {
@@ -782,6 +833,18 @@
       }
 
       function onLineChanged() {
+        syncSegmentsFromInput();
+        refreshResultFromWheel();
+      }
+
+      function onLineColorChanged(ev) {
+        const colorIn = ev.target;
+        const row = colorIn.closest(".line-row");
+        const idx = lineRowIndex(row);
+        if (idx >= 0) {
+          syncAttachedColorsLength(getLinesRaw().length);
+          attachedColors[idx] = normalizeHex6(colorIn.value) || null;
+        }
         syncSegmentsFromInput();
         refreshResultFromWheel();
       }
@@ -811,6 +874,8 @@
           const prev = attachedPhotos[idx];
           if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
           attachedPhotos.splice(idx, 1);
+          syncAttachedColorsLength(getLinesRaw().length);
+          attachedColors.splice(idx, 1);
         }
         row.remove();
         syncSegmentsFromInput();
@@ -821,9 +886,10 @@
         if (!linesListEl) return;
         while (linesListEl.firstChild) linesListEl.removeChild(linesListEl.firstChild);
         lines.forEach(function (line) {
-          linesListEl.appendChild(createLineRow(line));
+          linesListEl.appendChild(createLineRow(line, null));
         });
         syncAttachedLength(lines.length);
+        syncAttachedColorsLength(lines.length);
       }
 
       function sanitizeImageSrc(s) {
@@ -855,13 +921,23 @@
         }
       }
 
+      function syncAttachedColorsLength(n) {
+        while (attachedColors.length < n) attachedColors.push(null);
+        while (attachedColors.length > n) attachedColors.pop();
+      }
+
       function buildSegments() {
         const rawLines = getLinesRaw();
         syncAttachedLength(rawLines.length);
+        syncAttachedColorsLength(rawLines.length);
+        const rawColors = getColorsRaw();
         segments = rawLines.map(function (raw, i) {
           const parsed = parseLineWithOptionalUrl(raw);
           const imageSrc = parsed.urlFromLine || attachedPhotos[i] || null;
-          return { text: parsed.text, imageSrc: imageSrc };
+          const fromUi = normalizeHex6(rawColors[i]);
+          const color = fromUi || attachedColors[i] || null;
+          attachedColors[i] = color;
+          return { text: parsed.text, imageSrc: imageSrc, color: color };
         });
 
         segments.forEach(function (seg) {
@@ -1089,7 +1165,7 @@
 
         if (n === 1) {
           const seg = segments[0];
-          const base = COLORS[0];
+          const base = seg.color || COLORS[0];
           ctx.save();
           ctx.translate(cx, cy);
           ctx.rotate(rotation);
@@ -1147,7 +1223,8 @@
           const a0 = i * slice - Math.PI / 2;
           const a1 = (i + 1) * slice - Math.PI / 2;
           const mid = (a0 + a1) / 2;
-          const base = COLORS[i % COLORS.length];
+          const seg = segments[i];
+          const base = (seg && seg.color) ? seg.color : COLORS[i % COLORS.length];
 
           wedgePath(a0, a1, r);
           ctx.fillStyle = wedgeRadialFill(mid, r, base);
@@ -1165,7 +1242,6 @@
           wedgeInnerShadowArc(a0, a1, r, slice, 0.12);
           ctx.restore();
 
-          const seg = segments[i];
           const im = getImageMaybe(seg.imageSrc);
           if (im) drawClippedSectorImage(mid, r, slice, im);
 
@@ -1365,6 +1441,7 @@
         const lines = getLinesRaw();
         if (lines.length < 2) return;
         syncAttachedLength(lines.length);
+        syncAttachedColorsLength(lines.length);
         for (let i = lines.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           const t = lines[i];
@@ -1373,8 +1450,16 @@
           const tp = attachedPhotos[i];
           attachedPhotos[i] = attachedPhotos[j];
           attachedPhotos[j] = tp;
+          const tc = attachedColors[i];
+          attachedColors[i] = attachedColors[j];
+          attachedColors[j] = tc;
         }
-        setLinesInUI(lines);
+        if (linesListEl) {
+          while (linesListEl.firstChild) linesListEl.removeChild(linesListEl.firstChild);
+          for (let k = 0; k < lines.length; k++) {
+            linesListEl.appendChild(createLineRow(lines[k], attachedColors[k] || null));
+          }
+        }
         syncSegmentsFromInput();
         refreshResultFromWheel();
       }
@@ -1383,7 +1468,7 @@
       shuffleBtn.addEventListener("click", shuffleLines);
       if (addLineBtn && linesListEl) {
         addLineBtn.addEventListener("click", function () {
-          linesListEl.appendChild(createLineRow(""));
+          linesListEl.appendChild(createLineRow("", COLORS[0]));
           syncSegmentsFromInput();
           refreshResultFromWheel();
         });
