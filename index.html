@@ -215,6 +215,37 @@
       border-color: rgba(244, 185, 66, 0.35);
     }
 
+    .btn-delete-line {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(180deg, rgba(44, 18, 24, 0.92), rgba(20, 10, 14, 0.95));
+      color: rgba(255, 235, 240, 0.92);
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.2s, opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-delete-line:hover:not(:disabled) {
+      border-color: rgba(217, 79, 97, 0.55);
+    }
+
+    .btn-delete-line:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-delete-line:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
     .line-photo-input:disabled + .btn-upload-photo,
     .line-photo-input[disabled] + .btn-upload-photo {
       opacity: 0.45;
@@ -725,11 +756,19 @@
         lbl.className = "btn-upload-photo";
         lbl.htmlFor = fid;
         lbl.textContent = "Загрузить фото";
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "btn-delete-line";
+        delBtn.textContent = "Удалить";
         row.appendChild(textIn);
         row.appendChild(fileIn);
         row.appendChild(lbl);
+        row.appendChild(delBtn);
         textIn.addEventListener("input", onLineChanged);
         fileIn.addEventListener("change", onLinePhotoChange);
+        delBtn.addEventListener("click", function () {
+          deleteRow(row);
+        });
         return row;
       }
 
@@ -759,6 +798,21 @@
           attachedPhotos[idx] = URL.createObjectURL(file);
         }
         fileIn.value = "";
+        syncSegmentsFromInput();
+        refreshResultFromWheel();
+      }
+
+      function deleteRow(row) {
+        if (!linesListEl || !row) return;
+        if (spinning) return;
+        const idx = lineRowIndex(row);
+        if (idx >= 0) {
+          syncAttachedLength(getLinesRaw().length);
+          const prev = attachedPhotos[idx];
+          if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+          attachedPhotos.splice(idx, 1);
+        }
+        row.remove();
         syncSegmentsFromInput();
         refreshResultFromWheel();
       }
@@ -847,6 +901,9 @@
         if (linesListEl) {
           linesListEl.querySelectorAll(".line-photo-input").forEach(function (inp) {
             inp.disabled = !idle;
+          });
+          linesListEl.querySelectorAll(".btn-delete-line").forEach(function (btn) {
+            btn.disabled = !idle;
           });
         }
       }
